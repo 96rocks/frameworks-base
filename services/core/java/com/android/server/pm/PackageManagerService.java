@@ -4999,6 +4999,10 @@ public class PackageManagerService extends IPackageManager.Stub {
             if (N == 1) {
                 return query.get(0);
             } else if (N > 1) {
+                boolean enable = true;
+                if(intent.hasCategory(Intent.CATEGORY_HOME)){
+                    enable = SystemProperties.getBoolean("persist.sys.tuner.home_priority", true);
+                }
                 final boolean debug = ((intent.getFlags() & Intent.FLAG_DEBUG_LOG_RESOLUTION) != 0);
                 // If there is more than one activity with the same priority,
                 // then let the user decide between them.
@@ -5010,7 +5014,7 @@ public class PackageManagerService extends IPackageManager.Stub {
                 }
                 // If the first activity has a higher priority, or a different
                 // default, then it is always desirable to pick it.
-                if (r0.priority != r1.priority
+                if ((r0.priority != r1.priority && enable)
                         || r0.preferredOrder != r1.preferredOrder
                         || r0.isDefault != r1.isDefault) {
                     return query.get(0);
